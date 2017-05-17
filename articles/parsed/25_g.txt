@@ -1,0 +1,108 @@
+The constraint satisfaction problems (CSPs) form a simple formal frame to represent and solve some problems in artificial intelligence. The problem of the existence of solutions in a CSP is NP-complete. Therefore, some methods have been developed to simplify the CSP before or during the search for solutions.
+The consistency techniques are the most frequently used. Several algorithms achieving arc-consistency have been proposed for binary CSPs (Mackworth 1977; Mohr & Henderson 1986; Bessiere & Cordier 1993; Bessiere 1994) and for nary CSPs (Mohr & Masini 1988a). Only limited works have been carried out on the semantics of contraints : (Mohr & Masini 1988b) have described an improvement of the algorithm AC-4 for special constraints introduced by a vision problem, (Van Hentenryck, Deville, & Teng 1992) have studied monotonic and functional binary constraints. In this work, we are interested in a special case of n-ary constraints : the constraints of difference, for which we propose a filtering algorithm.
+A constraint is called constraint of diflerence if it is defined on a subset of variables by a set of tuples  CSP with 3 variables ~1, x2, x3 and one constraint of difference between these variables (see figure 1). The domains of variables are D1 = {a, b}, 02 = {a, 13) and 03 = {a, b, c}. The GAC4 filtering with the constraint of difference represented by a 3-ary constraint,  removes the values b and c from the domain of x3, while arc-consistency with the constraint of difference represented by binary constraints of difference, does not delete any value.
+In this paper we present an efficient way of implementing the generalized arc-consistency condition for the constraints of difference, in order to benefit from its pruning performances. Its space complexity is in O(pd) and its time complexity is in O(p2d2).
+The rest of the paper is organized as follows. Section 2 gives some preliminaries on constraint satisfaction problems and matching, and proposes a restricted definition of arc-consistency, which concerns only the constraints of difference : the diff-arc-consistency. Section 3 presents a new condition to ensure the diff-arcconsistency in CSPs having constraints of difference.
+In section 4 we propose an efficient implementation to achieve this condition and analyse its complexity. In section 5, we show its performance and its interest with an example. A conclusion is given in section 6.
+
+A finite CSP (Constraint Satisfaction Problem) P = (X, D,C) is defined as a set of n variables X = {Xl, "',x~), a set of finite domains V = (01, .... Dn) where Di is the set of possible values for variable i and a set of constraints between variables C = {G,C2, '",Cm}. A constraint Ci is defined on a set of variables (zil, .... xii) by a subset of the Cartesian product Di, x ... x Dij . A solution is an assignment of value to all variables which satisfies all the constraints.
+We will denote by : D (X’) the union of domains of variables of X’ C X (i.e D(X’) = UiExt Di).
+XC the set of variables on which a constraint C is difined.
+ap the arity of a constraint C : p = IXc I.
+. d the maximal cardinality of domains.
+
+A value ai in the domain of a variable xi is consistent with a given n-ary constraint if there exists values for all the other variables in the constraint such that these values with ai together simultaneously satisfy the constraint. More generally, arc-consistency for n-ary CSPs or the generalized arc-consistency is defined as follows (Mohr & Masini 1988a):  Definition 1 A CSP P = (X, V,C) is arcconsistent ifl : VX~ E X,Vai E Di,vC E C constraining Xi, VXj, .... xk E Xc, %j, .... ak such that C(dj, .... ai, .... ak) holds.
+
+Definition 2 Given a CSP P = (X, 2>,C), a constraint C is called constraint of difference if it is defined on a subset of variables Xc = {xii, ....xik} by a set of tuples, denoted by tuples(C) such that : tuples(C) s Di, X ... X Di, \ {(dl, .... dk) E Di, X ... X Di, s-t. 3 U, v 1 d, = d,}  From the previous definition, we propose a special arcconsistency which concerns only the constraints of difference :  Definition 3 A CSP P = (X, 27, C) is diff-arcconsistent ifl all of its constraints of difference are arc-consistent.
+
+Definition 4 Given a constraint of difference C, the bipartite graph GV(C) = (XC, D(Xc), E) where (xi, a) E E iff a E Di is culled value graph of C.
+
+of pairs contains a pair for each variable. This set corresponds to a set of edges, denoted by A in GV(C).
+Since P is diff-arc-consistent, the values in each tuple are all different. Thus, two edges of A cannot have a vertex in common and A is a matching with covers Xc.
+Moreover, each value of each variable in the constraint belongs to at least one tuple. So, each edge of GV(C) belongs to a matching which covers XC.
+-e : Let us consider a variable xi and a value a of its domain. For each constraint of difference C, the pair (xi, a) belongs to a matching which covers Xc in GV(C) . Since in a matching no two edges have a vertex in common, there exists values for all the other variables in the constraint such that these values together simultaneously satisfy the constraint. So P is diff-arc-consistent. I The use of matching theory is interesting because (Hopcroft & Karp 1973) have shown how to compute a matching which covers X in a bipartite graph G = (X, Y, E), with m edges, ’ in time 0( mm).
+This theorem gives us an efficient way to represent the constraint of difference in a CSP. In fact, a constraint of difference can be represent only by its value graph, with a space complexity in O(pd). It also allows us to define a basic algorithm (algorithm 1) to filter the domains of variables of the set on which one constraint of difference is defined. This algorithm builds the value graph of the constraint of difference and computes a matching which covers XC in order to delete every edge which belongs to no matching covering XC.
+Figure 3 gives an application of this filtering.
+
+Deletion of every edge which belongs to no matching which covers X  In order to simplify the notation, we consider a bipartite graph G = (X, Y, E) rather than the bipartite  ’(Alt et al.
+Hopcroft and 0(1X1’-“,/m).
+ment by a factor of dm.
+
+1991) give an implementation of Karp’s algorithm which runs in time For dense graph this is an improve graph G = (XC, D(Xc), E), and a matching M which covers X in G. In order to understand how we can  delete every edge which belongs to no matching, we present a few definitions about matching theory. For more information the reader can consult (Berge 1970) or (Lovasz & Plummer 1986).
+
+Definition 6 Let M be a matching, an edge in M is a matching edge; every edge not in M is free. A vertexis matched if it is incident to a matching edge and free otherwise. An alternating path or cycle is a simple path or cycle whose edges are alternately matching and free. The length of an alternating path or cycle is the number of edges it contains. An edge which belongs to every maximum matching is vital.
+
+Property 1 (Berge 1970) An edge belongs to some of but not all maximum matchings, iff, for an arbitrary maximum matching M, it belongs to either an even alternating path which begins at a free vertex, or an even alternating cycle.
+
+From this property we can find for an arbitrary matching M which covers X, every edge which belongs to no matching covering X. There are the edges which belong to neither M (there are not vital), nor an even alternating path which begins at a free vertex, nor an even alternating cycle.
+
+Proposition 1 Given a bipartite graph G = (X, Y, E) with a matching M which covers X and the graph Go = (X, Y, Succ), obtained from G by orienting edges with the function : Vx;~X:Succ(x)={y~Y/(x,y)~M} V~EY:S~~~(~)={~EX/(~,~)EE-M} we have the two following properties : 1) Every directed cycle of Go corresponds to an even alternating cycle of G, and conversely.
+
+2) Every directed simple path of Go, which begins at a free vertex corresponds to an even alternating path of G which begins at a free vertex, and conversely.
+
+proof If we ignore the parity, it is obvious that the proposition is true. In the first case, since G is bipartite it does not have any odd cycle. In the second case, we must show every directed simple path of Go which begins at a free vertex to corresponds to an even alternating path of G which begins at a free vertex. M is a matching which covers X, so there is no free vertex in X. Since G is bipartite and since every path begins at a free vertex, in Y, every odd directed simple path ends with a vertex in X. From this vertex, we can always find a vertex in Y which does not belong to the path, because every vertex in X has one successor and because a vertex in Y has one predecessor. Therefore from an odd directed simple path we can always build an even directed simple path.0  From this proposition we produce a linear algorithm (algorithm 2), that deletes every edge which does not belong to any matching which covers X.
+
+Algorithm 2: REMOVEEDGESFROMG(G,M(G)) % RE is the set of edges removed from G.
+% M(G) is a matching of G which covers X % The function returns RE egin Mark all directed edges in Go as “unused”.
+Set RE to 0.
+Look for all directed edges that belong to a directed simple path which begins at a free vertex by a breadth-fist search starting from free vertices, and mark them as “used”.
+Compute the strongly connected components of Go.
+Mark as “used” any directed edge that joins two vertices in the same strongly connected component.
+for each directed edge de marked as “unused” do set e to the corresponding edge of de if e E M(G) then mark e as “vital” else  Step 2 corresponds to the point 2 of the proposition 1. Step13 computes the strongly connected component of Go, because an edge joining two vertices in the same strongly connected component belongs to a directed cycle and conversely. These edges belong to an even alternating cycle of G (cf point 1 of proposition 1). After this step the set A of all edges belonging to some but not all matchings covering X are known. The set RE of edges to remove from G is: RE = E - (A U M).
+This is done by step 4. The algorithm complexity is the same as the search for strongly connected components(Tarjan 1972) , i.e O(m + n) for a graph with m edges and n vertices.
+
+We have shown how for one constraint of difference C every edge which belongs to no matching which covers XC can be deleted. But a variable can be constrained by several constraints and it is necessary to propagate the deletions. In fact, let us consider xi a variable of XC, xi can be constrained by several constraints. Thus, a value of Di can be deleted for reasons independant from C. This deletion involves the removal of one edge from GV(C). So, it is necessary to study the consequences of this modification of the GV(C) structure.
+
+The deletion of values for one constraint of difference can involve some modifications for the other constraints. And for the other constraints of difference we can do better than repeat the first algorithm by using the fact that before the deletion, a matching which covers X is known.
+The propagation algorithm we propose has two sets as parameters. The first one represents the set of edges to remove from the bipartite graph, and the second the set of edges that will be deleted by the filtering. The algorithm needs a function, denoted by MATCHINGCOVERINGX(G, Ml, Mz), which computes a matching M2, which covers X, from a matching Ml which is not maximum. It returns true if Mz exists and false otherwise. The new filtering is represented by algorithm 3.
+
+Algorithm 3: DIFF-PROPAGATION(G,M(G),ER,RE) % the function returns false if there is no solution % G is a value graph % M(G) is a matching which covers XC % ER is the set of edges to remove from G % RE is the set of edges that will be deleted by the filtering 1 gin ComputeMatching t false for each e E ER do if e E M(G) then  M(G) +- W3 - kl if e is marked as “vital” then return false 1 else ComputeMatching t true  1 remove e from G if computeMatching then if -, MATCHINGCOVERINGX(G,M(G),M’) then 1 return false else L M(G) c M’  It is divided into three parts. First, it removes edges from the bipartite graph. Second, it eventually computes a new matching which covers XC. Third, it deletes the edges which does not belongs to any matching covering XC. The algorithm returns false if ER  contains a vital edge or if there does not exist a matching which covers XC.
+Now, let us compute its complexity. Let m be the number of edges of G, and n be the number of vertices. Let us suppose that we must remove Ic edges from G (IERI = TG). The complexity of 1 is in O(k).
+Step 2 involves, in the worst case, the computation of a matching covering XC from a matching of cardinality 1M - rCl.This computation has cost 0(&m) (see theorem 3 of (Hopcroft & Karp 1973)). The complexity of step 3 is in O(m).
+In the worst case, the edges of G can be deleted one by one. Then the previous function will be called m times.
+So the global complexity is in O(m2). If p = IXcl and d is the maximum cardinality of domains of variables of XC, then the complexity is in O(p2d2) for one constraint of difference.
+
+1. There are five houses, each of a different color and inhabited by men of different nationalities, with differents pets, drinks and cigarettes.
+2. The Englishman lives in the red house.
+3. The Spaniard owns a dog.
+4. Coffee is drunk in the green house.
+5. The Ukrainian drinks tea.
+6. The green house is immediately to the right of the ivoiry house.
+7. The Old-Gold smoker owns snails.
+8. Kools are being smoked in the yellow house.
+9. Milk is drunk in the middle house.
+10. The Norwegian lives in the first house on the left.
+11. The Chesterfield smoker lives next to the fox owner.
+12. Kools are smoked in the house next to the house where the horse is kept.
+13. The Lucky-Strike smoker drinks orange juice.
+14. The Japanese smokes Parliament.
+15. The Norwegian lives next to the blue house.
+The query is : Who drinks water and who owns the zebra ?  This problem can be represented as a constraint network involving 25 variables, one for each of the five colors, drinks, nationalities, cigarettes and pets :  Cl red I31 coffee NI Englishman Tl Old-Gold AI dog CZ.green I32 tea NZ Spaniard TZChesterfield A2 snails C3 ivoiry I33 milk N3 Ukranian T3Kools A3 fox C4 yellow B4 orange N4 Norwegian T4Lucky-Strike A4 horse C5 blue Bg water N5 Japanese T5Parliament A5 zebra  Each of the variables has domain values { 1,2,3,4,5}, each number corresponding to a house position (e.g.
+assigning the value 2 to the variable horse means that the horse owner lives in the second house) (Dechter 1990). The assertions 2 to 15 are translated into unary and binary constraints. In addition, there are three  ways of representing the first assertion which means that the variables in the same cluster must take different values :  1. A binary constraint is built between any pair of variables of the same cluster ensuring that they are not assigned the same value. In this case we have a binary CSP.
+
+2. Five 5-ary constraints of difference are built (one for each of the clusters). And the CSP is not binary.
+
+3. The five 5-ary constraints of difference are represented by their value graphs. The space complexity of one constraint is in O(pd).
+
+The first representation is generally used to solve the problem (Dechter 1990; Bessiere & Cordier 1993).
+From these three representations we can study the different results obtained from arc-consistency. They are given in figures 4 and 5. The constraints corresponding to the assertions 2 to 15 are represented in extension.
+The constraints of difference among the variables of each cluster are omitted for clarity.
+
+For the first representation, the result of the filtering by arc-consistency is given in figure 4.
+
+For the second representation, the filtering algorithm employed is the generalized arc-consistency. Figure 5 shows the new results. It has pruned more values that the previous one.
+For the third representation, the filtering algorithm employed is arc-consistency for the binary constraints combined with the new filtering for the constraints of difference. The obtained results are the same as with the second method.
+Let us denote by a the number of binary constraints corresponding to the assertions 2 to 15, p the size of a cluster, c the number of clusters, d the number of  2” 1” ?2’2” T23!”32”I l5 Hl5 4 4 l ”3 EM 12 fl 13 = 14 = 5 5 4 4 4 5 5 5  values in a domain and O(ed2) the complexity for arcconsistency2 in binary CSPs. Let us compute the complexity for the three methods :  1. For the first representation, the number of binary constraints of difference added is in O(cp2). So, the filtering complexity is 0( (a + cp2)d2).
+
+2. In the second case, we can consider that the complexity is the sum of the lengths of all admissible tuples for the five 5-ary constraints. It is in 0(&p).
+
+3. For the third method arc-consistency is in O(ud2) and the filtering for the constraints of difference is in O(cp2d2). The total complexity is in O(ucZ2) + O(cp2d2). It is equivalent to the first one.
+
+The second filtering eliminates more values than the first one. But its complexity is higher. The representation and the algorithm proposed in this paper give pruning results equivalent to the second approach with the same complexity as the first one. So we can conclude that the new filtering is good for problems looking like the zebra problem.
+
+In this paper we have presented a filtering algorithm for constraints of difference in CSPs. This algorithm can be viewed as an efficient way of implementing the generalized arc-consistency condition for a special type of constraint : the constraints of difference. It allows us to benefit from the pruning performance of the previous condition with a low complexity. In fact, its space complexity is in O(pd) and its time complexity is in O(p2d2) for one constraint defined on a subset of p variables having domains of cardinality at most d. It has been shown to be very efficient for the zebra problem. And it has been successfully used to solve the subgraph isomorphism problem in the system RESYN (Vismara et al. 1992)) a computer-aided design of complex organic synthesis plan.
+
+2(Mohr & Masini 198813) reduce this complexity to O(ed) for the binary alldifferent constraints  We would like to thank particularly Christian Bessiere and also Marie-Catherine Vilarem, Tibor Kijkkny and the anonymous reviewers for their comments which helped improve this paper.
+
+Alt, H.; Blum, N.; Melhorn, K.; and Paul, M. 1991.
+Computing a maximum cardinality matching in a bipartite graph in time o(n1v5 Jm7iog;E>. Information Processing Letters 37:237-240.
